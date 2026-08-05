@@ -72,9 +72,7 @@ z-index: -1;
 pointer-events: none;
 }
 
-/* MODIFIKASI BACKGROUND LOGIN UNTUK STYLE INNOPPL */
 #loginScreen {
-background-image: url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop');
 background-size: cover;
 background-position: center;
 background-repeat: no-repeat;
@@ -387,7 +385,7 @@ RESET
 <h3 class="font-master text-lg font-bold text-gray-400">DATABASE KOSONG</h3>
 <p class="text-xs text-gray-500 mt-1">Belum ada item di folder ini. Klik "+ ADD ENTRY" untuk menambahkan item baru.</p>
 <button onclick="openDataModal()" class="mt-4 px-5 py-2.5 bg-yellow-400 text-black font-master font-bold text-xs rounded-xl uppercase hover:bg-amber-400 transition cursor-pointer">
-+ ADD ENTRY
+#ERROR!
 </button>
 </div>
 
@@ -710,14 +708,14 @@ SAVE CONFIGURATION
 // FIREBASE CONFIGURATION & INITIALIZATION
 // ==========================================
 const firebaseConfig = {
-  apiKey: "AIzaSyAw6BqDcXo7V0BAftW9jQbTdKZi6Lf7vGw",
-  authDomain: "rickychar-4bcd2.firebaseapp.com",
-  databaseURL: "https://rickychar-4bcd2-default-rtdb.firebaseio.com",
-  projectId: "rickychar-4bcd2",
-  storageBucket: "rickychar-4bcd2.firebasestorage.app",
-  messagingSenderId: "497316854602",
-  appId: "1:497316854602:web:609a043da60f0574cf1fb3",
-  measurementId: "G-M8PFLSWMDB"
+apiKey: "AIzaSyAw6BqDcXo7V0BAftW9jQbTdKZi6Lf7vGw",
+authDomain: "rickychar-4bcd2.firebaseapp.com",
+databaseURL: "https://rickychar-4bcd2-default-rtdb.firebaseio.com",
+projectId: "rickychar-4bcd2",
+storageBucket: "rickychar-4bcd2.firebasestorage.app",
+messagingSenderId: "497316854602",
+appId: "1:497316854602:web:609a043da60f0574cf1fb3",
+measurementId: "G-M8PFLSWMDB"
 };
 
 let db = null;
@@ -725,34 +723,34 @@ let isFirebaseConnected = false;
 let isSyncingFromFirebase = false;
 
 try {
-  if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-  }
-  db = firebase.database();
-  
-  // Monitor koneksi Firebase
-  const connectedRef = db.ref(".info/connected");
-  connectedRef.on("value", (snap) => {
-    const dot = document.getElementById("firebaseStatusDot");
-    const txt = document.getElementById("firebaseStatusText");
-    if (snap.val() === true) {
-      isFirebaseConnected = true;
-      if (dot) dot.className = "w-2 h-2 rounded-full bg-emerald-400 animate-pulse";
-      if (txt) {
-        txt.className = "text-[9px] font-master font-bold text-emerald-400 uppercase tracking-widest";
-        txt.innerText = "FIREBASE ONLINE";
-      }
-    } else {
-      isFirebaseConnected = false;
-      if (dot) dot.className = "w-2 h-2 rounded-full bg-amber-500 animate-pulse";
-      if (txt) {
-        txt.className = "text-[9px] font-master font-bold text-amber-500 uppercase tracking-widest";
-        txt.innerText = "LOCAL MODE (OFFLINE)";
-      }
-    }
-  });
+if (!firebase.apps.length) {
+firebase.initializeApp(firebaseConfig);
+}
+db = firebase.database();
+
+// Monitor koneksi Firebase
+const connectedRef = db.ref(".info/connected");
+connectedRef.on("value", (snap) => {
+const dot = document.getElementById("firebaseStatusDot");
+const txt = document.getElementById("firebaseStatusText");
+if (snap.val() === true) {
+isFirebaseConnected = true;
+if (dot) dot.className = "w-2 h-2 rounded-full bg-emerald-400 animate-pulse";
+if (txt) {
+txt.className = "text-[9px] font-master font-bold text-emerald-400 uppercase tracking-widest";
+txt.innerText = "FIREBASE ONLINE";
+}
+} else {
+isFirebaseConnected = false;
+if (dot) dot.className = "w-2 h-2 rounded-full bg-amber-500 animate-pulse";
+if (txt) {
+txt.className = "text-[9px] font-master font-bold text-amber-500 uppercase tracking-widest";
+txt.innerText = "LOCAL MODE (OFFLINE)";
+}
+}
+});
 } catch (err) {
-  console.warn("Firebase Init Warning:", err);
+console.warn("Firebase Init Warning:", err);
 }
 
 // 1. MASTER AUTH & BACKGROUND STATE
@@ -782,8 +780,7 @@ const loginEl = document.getElementById('loginScreen');
 const bgInnerEl = document.getElementById('dynamicBg');
 if(loginEl) {
 if(customBgFront) loginEl.style.backgroundImage = `url("${customBgFront}")`;
-// Background Default Style INNOPPL (Bangunan) jika belum ada custom
-else loginEl.style.backgroundImage = `url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop')`;
+else loginEl.style.backgroundImage = `radial-gradient(circle at 50% 10%, #0d1527 0%, #030712 90%)`;
 }
 if(bgInnerEl) {
 if(customBgInner) bgInnerEl.style.backgroundImage = `url("${customBgInner}")`;
@@ -893,60 +890,60 @@ syncToFirebase();
 function syncToFirebase() {
 if (isSyncingFromFirebase || !db) return;
 db.ref("vault_data").set({
-  menus: menus,
-  data: masterData,
-  auth: masterAuth,
-  bgFront: customBgFront,
-  bgInner: customBgInner,
-  updatedAt: new Date().toISOString()
+menus: menus,
+data: masterData,
+auth: masterAuth,
+bgFront: customBgFront,
+bgInner: customBgInner,
+updatedAt: new Date().toISOString()
 }).catch((err) => console.error("Firebase Sync Write Error:", err));
 }
 
 function initFirebaseRealtimeListener() {
 if (!db) return;
 db.ref("vault_data").on("value", (snapshot) => {
-  if (snapshot.exists()) {
-    const val = snapshot.val();
-    isSyncingFromFirebase = true;
+if (snapshot.exists()) {
+const val = snapshot.val();
+isSyncingFromFirebase = true;
 
-    if (val.menus && Array.isArray(val.menus)) {
-      menus = val.menus;
-      localStorage.setItem('v19_menus', JSON.stringify(menus));
-    }
-    if (val.data && Array.isArray(val.data)) {
-      masterData = val.data;
-      localStorage.setItem('v19_data', JSON.stringify(masterData));
-    }
-    if (val.auth && val.auth.user && val.auth.pass) {
-      masterAuth = val.auth;
-      localStorage.setItem('v19_master_auth', JSON.stringify(masterAuth));
-    }
-    if (val.bgFront !== undefined) {
-      customBgFront = val.bgFront;
-      if (customBgFront) localStorage.setItem('v19_bg_front', customBgFront);
-      else localStorage.removeItem('v19_bg_front');
-    }
-    if (val.bgInner !== undefined) {
-      customBgInner = val.bgInner;
-      if (customBgInner) localStorage.setItem('v19_bg_inner', customBgInner);
-      else localStorage.removeItem('v19_bg_inner');
-    }
+if (val.menus && Array.isArray(val.menus)) {
+menus = val.menus;
+localStorage.setItem('v19_menus', JSON.stringify(menus));
+}
+if (val.data && Array.isArray(val.data)) {
+masterData = val.data;
+localStorage.setItem('v19_data', JSON.stringify(masterData));
+}
+if (val.auth && val.auth.user && val.auth.pass) {
+masterAuth = val.auth;
+localStorage.setItem('v19_master_auth', JSON.stringify(masterAuth));
+}
+if (val.bgFront !== undefined) {
+customBgFront = val.bgFront;
+if (customBgFront) localStorage.setItem('v19_bg_front', customBgFront);
+else localStorage.removeItem('v19_bg_front');
+}
+if (val.bgInner !== undefined) {
+customBgInner = val.bgInner;
+if (customBgInner) localStorage.setItem('v19_bg_inner', customBgInner);
+else localStorage.removeItem('v19_bg_inner');
+}
 
-    if (!menus.find(m => m.name === activeMenu)) {
-      activeMenu = menus[0] ? menus[0].name : "ALARM CENTER";
-    }
+if (!menus.find(m => m.name === activeMenu)) {
+activeMenu = menus[0] ? menus[0].name : "ALARM CENTER";
+}
 
-    applyBackgrounds();
-    renderSidebar();
-    renderCards();
+applyBackgrounds();
+renderSidebar();
+renderCards();
 
-    isSyncingFromFirebase = false;
-  } else {
-    // Jika database Firebase masih kosong, upload data awal
-    syncToFirebase();
-  }
+isSyncingFromFirebase = false;
+} else {
+// Jika database Firebase masih kosong, upload data awal
+syncToFirebase();
+}
 }, (err) => {
-  console.warn("Firebase Listener Error:", err);
+console.warn("Firebase Listener Error:", err);
 });
 }
 
@@ -2066,7 +2063,7 @@ else { sb.classList.add('-translate-x-full'); ov.style.display = 'none'; }
 }
 
 function escapeHtml(str) {
-return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(38, '&gt;').replace(/"/g, '&quot;');
+return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
 // 10. CANVAS PARTICLES ANIMATION

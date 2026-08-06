@@ -63,6 +63,21 @@ background-size: cover;
 background-position: center;
 background-repeat: no-repeat;
 transition: background 0.5s ease;
+overflow: hidden;
+}
+
+/* VIDEO BACKGROUND STYLE */
+.bg-video-element {
+position: absolute;
+top: 50%;
+left: 50%;
+min-width: 100%;
+min-height: 100%;
+width: auto;
+height: auto;
+z-index: -3;
+transform: translateX(-50%) translateY(-50%);
+object-fit: cover;
 }
 
 #particleCanvas {
@@ -77,6 +92,7 @@ background-size: cover;
 background-position: center;
 background-repeat: no-repeat;
 transition: background 0.5s ease;
+overflow: hidden;
 }
 
 .pasaran-row {
@@ -462,11 +478,11 @@ SIMPAN PERUBAHAN AKUN MASTER
 <!-- SECTION 2: BACKGROUND DEPAN -->
 <div class="bg-black/60 border border-white/10 rounded-2xl p-5 mb-5 space-y-3">
 <h4 class="font-master font-bold text-xs text-yellow-400 uppercase tracking-wider flex items-center gap-2">
-<i class="fas fa-image text-yellow-400"></i> BACKGROUND DEPAN (HALAMAN LOGIN)
+<i class="fas fa-image text-yellow-400"></i> BACKGROUND DEPAN (LOGIN)
 </h4>
 
 <div>
-<label class="block text-[9px] font-master text-gray-400 uppercase tracking-widest mb-1">PASTE URL GAMBAR BACKGROUND DEPAN</label>
+<label class="block text-[9px] font-master text-gray-400 uppercase tracking-widest mb-1">PASTE URL GAMBAR ATAU VIDEO (.mp4)</label>
 <input type="text" id="bgFrontUrlInput" placeholder="https://... atau data:image/..." class="w-full bg-[#050811] border border-white/10 p-3 rounded-xl outline-none focus:border-yellow-400 text-white font-code text-xs mb-2">
 </div>
 
@@ -486,11 +502,11 @@ Reset Default
 <!-- SECTION 3: BACKGROUND DALAM -->
 <div class="bg-black/60 border border-white/10 rounded-2xl p-5 mb-5 space-y-3">
 <h4 class="font-master font-bold text-xs text-yellow-400 uppercase tracking-wider flex items-center gap-2">
-<i class="fas fa-desktop text-yellow-400"></i> BACKGROUND DALAM (HALAMAN DASHBOARD)
+<i class="fas fa-desktop text-yellow-400"></i> BACKGROUND DALAM (DASHBOARD)
 </h4>
 
 <div>
-<label class="block text-[9px] font-master text-gray-400 uppercase tracking-widest mb-1">PASTE URL GAMBAR BACKGROUND DALAM</label>
+<label class="block text-[9px] font-master text-gray-400 uppercase tracking-widest mb-1">PASTE URL GAMBAR ATAU VIDEO (.mp4)</label>
 <input type="text" id="bgInnerUrlInput" placeholder="https://... atau data:image/..." class="w-full bg-[#050811] border border-white/10 p-3 rounded-xl outline-none focus:border-yellow-400 text-white font-code text-xs mb-2">
 </div>
 
@@ -802,17 +818,59 @@ localStorage.setItem('v19_master_auth', JSON.stringify(masterAuth));
 syncToFirebase();
 }
 
+// FUNGSI CEK EKSTENSI VIDEO
+function isVideoUrl(url) {
+    if (!url) return false;
+    return url.match(/\.(mp4|webm|ogg|mov)$/i) !== null || url.includes("video");
+}
+
 function applyBackgrounds() {
-const loginEl = document.getElementById('loginScreen');
-const bgInnerEl = document.getElementById('dynamicBg');
-if(loginEl) {
-if(customBgFront) loginEl.style.backgroundImage = `url("${customBgFront}")`;
-else loginEl.style.backgroundImage = `radial-gradient(circle at 50% 10%, #0d1527 0%, #030712 90%)`;
-}
-if(bgInnerEl) {
-if(customBgInner) bgInnerEl.style.backgroundImage = `url("${customBgInner}")`;
-else bgInnerEl.style.backgroundImage = `radial-gradient(circle at 50% 10%, #0d1527 0%, #030712 90%)`;
-}
+    const loginEl = document.getElementById('loginScreen');
+    const bgInnerEl = document.getElementById('dynamicBg');
+
+    // Handle Login Screen Background
+    if(loginEl) {
+        let existingVideo = loginEl.querySelector('.bg-video-element');
+        if(isVideoUrl(customBgFront)) {
+            if(!existingVideo) {
+                existingVideo = document.createElement('video');
+                existingVideo.className = 'bg-video-element';
+                existingVideo.autoplay = true;
+                existingVideo.muted = true;
+                existingVideo.loop = true;
+                existingVideo.playsInline = true;
+                loginEl.prepend(existingVideo);
+            }
+            if(existingVideo.src !== customBgFront) existingVideo.src = customBgFront;
+            loginEl.style.backgroundImage = 'none';
+        } else {
+            if(existingVideo) existingVideo.remove();
+            if(customBgFront) loginEl.style.backgroundImage = `url("${customBgFront}")`;
+            else loginEl.style.backgroundImage = `radial-gradient(circle at 50% 10%, #0d1527 0%, #030712 90%)`;
+        }
+    }
+
+    // Handle Dashboard Background
+    if(bgInnerEl) {
+        let existingVideo = bgInnerEl.querySelector('.bg-video-element');
+        if(isVideoUrl(customBgInner)) {
+            if(!existingVideo) {
+                existingVideo = document.createElement('video');
+                existingVideo.className = 'bg-video-element';
+                existingVideo.autoplay = true;
+                existingVideo.muted = true;
+                existingVideo.loop = true;
+                existingVideo.playsInline = true;
+                bgInnerEl.prepend(existingVideo);
+            }
+            if(existingVideo.src !== customBgInner) existingVideo.src = customBgInner;
+            bgInnerEl.style.backgroundImage = 'none';
+        } else {
+            if(existingVideo) existingVideo.remove();
+            if(customBgInner) bgInnerEl.style.backgroundImage = `url("${customBgInner}")`;
+            else bgInnerEl.style.backgroundImage = `radial-gradient(circle at 50% 10%, #0d1527 0%, #030712 90%)`;
+        }
+    }
 }
 
 // 2. MASTER DEFAULT DATA STRUCTURES

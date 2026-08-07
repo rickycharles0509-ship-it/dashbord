@@ -248,6 +248,33 @@ animation: toastIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 animation: alarmPopupIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 box-shadow: 0 0 35px rgba(250, 204, 21, 0.4), 0 10px 30px rgba(0, 0, 0, 0.8);
 }
+
+/* SCRIPT NEW UI STYLES */
+.promo-tab {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #94a3b8;
+    transition: all 0.2s;
+    min-width: 140px;
+}
+.promo-tab.active {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    border-color: #60a5fa;
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+}
+.editor-textarea {
+    background: #0d1117;
+    color: #c9d1d9;
+    font-family: 'JetBrains Mono', monospace;
+    resize: none;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+.editor-textarea:focus {
+    border-color: #3b82f6;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
 </style>
 </head>
 <body class="font-body bg-vault-bg text-slate-100 h-screen flex overflow-hidden select-none">
@@ -345,7 +372,7 @@ box-shadow: 0 0 35px rgba(250, 204, 21, 0.4), 0 10px 30px rgba(0, 0, 0, 0.8);
 
 <!-- SIDEBAR TOP PROFILE CARD -->
 <div class="p-4 border-b border-white/10">
-<div class="bg-[#080c14] border border-yellow-400/30 rounded-2xl p-5 text-center shadow-[0_0_15px_rgba(250,204,21,0.1)]">
+<div class="bg-[#080c14] border border-yellow-400/30 rounded-2xl p-5 text-center shadow-[0_0_15_rgba(250,204,21,0.1)]">
 <div class="w-12 h-12 rounded-2xl bg-black/60 border border-yellow-400/50 flex items-center justify-center mx-auto mb-2 text-yellow-400 text-xl shadow-inner">
 <i class="fas fa-crown"></i>
 </div>
@@ -419,8 +446,8 @@ box-shadow: 0 0 35px rgba(250, 204, 21, 0.4), 0 10px 30px rgba(0, 0, 0, 0.8);
         </div>
     </div>
 
-    <!-- CONTROL / SEARCH BAR -->
-    <div class="flex flex-col md:flex-row justify-between items-center gap-3">
+    <!-- CONTROL / SEARCH BAR (NORMAL) -->
+    <div id="normalControlBar" class="flex flex-col md:flex-row justify-between items-center gap-3">
         <div class="relative w-full md:w-96">
             <input type="text" id="searchInput" oninput="renderCards()" placeholder="Cari data, username, atau pasaran..." class="w-full bg-[#080c14] border border-white/10 pl-10 pr-4 py-3 rounded-2xl outline-none focus:border-yellow-400 text-xs text-white font-bold transition shadow-xl">
             <i class="fas fa-search absolute left-3.5 top-3.5 text-gray-500 text-xs"></i>
@@ -446,6 +473,79 @@ box-shadow: 0 0 35px rgba(250, 204, 21, 0.4), 0 10px 30px rgba(0, 0, 0, 0.8);
             <button onclick="openDataModal()" class="bg-yellow-400 hover:bg-amber-400 text-black px-5 py-3 rounded-2xl font-master font-black text-xs uppercase tracking-wider transition shadow-[0_0_15px_rgba(250,204,21,0.3)] flex items-center gap-2 shrink-0 cursor-pointer">
                 <i class="fas fa-plus text-xs"></i> ADD ENTRY
             </button>
+        </div>
+    </div>
+</div>
+
+<!-- SCRIPT NEW EDITOR CONTAINER -->
+<div id="scriptNewEditor" style="display: none;" class="flex flex-col gap-6">
+    <!-- Slot Tabs Navigation -->
+    <div class="flex items-center gap-3">
+        <div id="slotTabs" class="flex flex-nowrap gap-2 overflow-x-auto pb-1 flex-1"></div>
+        <button onclick="addNewScriptSlot()" class="w-11 h-11 shrink-0 bg-emerald-500 hover:bg-emerald-400 text-black rounded-xl flex items-center justify-center shadow-lg transition cursor-pointer" title="Tambah Slot Baru">
+            <i class="fas fa-plus text-lg"></i>
+        </button>
+    </div>
+
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start h-[calc(100vh-340px)]">
+        <!-- Editor Column -->
+        <div class="bg-[#080c14] border border-white/10 rounded-[32px] p-6 flex flex-col h-full overflow-hidden shadow-2xl">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="font-master font-black text-sm text-blue-400 uppercase tracking-widest flex items-center gap-2">
+                    <i class="fas fa-code"></i> EDITOR HTML PROMO
+                </h3>
+                <span class="px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] font-master font-bold rounded-lg uppercase">SYSTEM READY</span>
+            </div>
+
+            <!-- Fields -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div>
+                    <label class="block text-[9px] font-master text-gray-500 uppercase font-bold mb-1.5">JUDUL SCRIPT</label>
+                    <input type="text" id="editorPromoTitle" oninput="autoSaveSlot()" class="w-full bg-[#050811] border border-white/10 p-3.5 rounded-xl outline-none focus:border-blue-500 text-xs text-white font-bold uppercase">
+                </div>
+                <div>
+                    <label class="block text-[9px] font-master text-gray-500 uppercase font-bold mb-1.5">KATEGORI</label>
+                    <input type="text" id="editorPromoCategory" oninput="autoSaveSlot()" class="w-full bg-[#050811] border border-white/10 p-3.5 rounded-xl outline-none focus:border-blue-500 text-xs text-white font-bold uppercase">
+                </div>
+                <div>
+                    <label class="block text-[9px] font-master text-gray-500 uppercase font-bold mb-1.5">STATUS</label>
+                    <select id="editorPromoStatus" onchange="autoSaveSlot()" class="w-full bg-[#050811] border border-white/10 p-3.5 rounded-xl outline-none focus:border-blue-500 text-xs text-white font-bold uppercase">
+                        <option value="Aktif">Aktif</option>
+                        <option value="Non-Aktif">Non-Aktif</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-wrap gap-2 mb-4">
+                <button onclick="saveCurrentSlot()" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-master font-bold text-[10px] uppercase rounded-xl transition flex items-center gap-2 shadow-lg"><i class="fas fa-save"></i> Simpan Slot</button>
+                <button onclick="formatCode()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-master font-bold text-[10px] uppercase rounded-xl transition"><i class="fas fa-sparkles"></i> Rapikan</button>
+                <button onclick="applyPromoTemplate()" class="px-4 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white font-master font-bold text-[10px] uppercase rounded-xl transition"><i class="fas fa-wand-magic-sparkles"></i> Template</button>
+                <button onclick="resetEditorContent()" class="px-4 py-2.5 bg-red-600/20 border border-red-500/30 text-red-400 hover:bg-red-500 hover:text-white font-master font-bold text-[10px] uppercase rounded-xl transition"><i class="fas fa-rotate-left"></i> Reset</button>
+                <button onclick="deleteCurrentSlot()" class="px-4 py-2.5 bg-black border border-red-500/40 text-red-500 hover:bg-red-500 hover:text-white font-master font-bold text-[10px] uppercase rounded-xl transition ml-auto"><i class="fas fa-trash"></i> Hapus</button>
+            </div>
+
+            <!-- Code Area -->
+            <div class="flex-grow relative">
+                <textarea id="promoCodeInput" oninput="updateScriptPreview(); autoSaveSlot();" class="editor-textarea w-full h-full p-5 rounded-2xl text-xs" placeholder="Masukkan kode script HTML di sini..."></textarea>
+            </div>
+        </div>
+
+        <!-- Preview Column -->
+        <div class="bg-[#080c14] border border-white/10 rounded-[32px] p-6 flex flex-col h-full overflow-hidden shadow-2xl">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="font-master font-black text-sm text-yellow-400 uppercase tracking-widest flex items-center gap-2">
+                    <i class="fas fa-desktop"></i> PREVIEW REALTIME
+                </h3>
+                <div class="flex gap-2">
+                    <span id="charCounter" class="px-3 py-1 bg-white/5 border border-white/10 text-gray-500 text-[9px] font-master font-bold rounded-lg uppercase">0 CHARS</span>
+                    <span class="px-3 py-1 bg-red-500 text-white text-[10px] font-master font-black rounded-lg animate-pulse">LIVE</span>
+                </div>
+            </div>
+
+            <div class="flex-grow bg-white rounded-2xl overflow-hidden relative shadow-inner">
+                <iframe id="promoPreviewFrame" class="w-full h-full border-none"></iframe>
+            </div>
         </div>
     </div>
 </div>
@@ -620,7 +720,7 @@ Reset Default
 <option value="account">MODE AKUN / DATA LOGIN</option>
 <option value="note">MODE CATATAN / KOTAK-KOTAK</option>
 <option value="pasaran">MODE PASARAN LOTTERY</option>
-<option value="pasaran">MODE SCRIPT NEW</option> 
+<option value="script_promo">MODE SCRIPT NEW (HTML EDITOR)</option> 
 </select>
 </div>
 </div>
@@ -985,6 +1085,7 @@ const initialVaultData = [
 let menus = defaultMenus;
 let activeMenu = "ALARM CENTER";
 let masterData = initialVaultData;
+let activeSlotIndex = 0; // State khusus untuk Editor Script
 
 try {
 let savedM = localStorage.getItem('v19_menus');
@@ -1379,15 +1480,192 @@ const subEl = document.getElementById('folderSubtitle');
 if(titleEl) titleEl.innerText = mInfo.name;
 if(subEl) subEl.innerText = mInfo.subtitle || "Centralized Command & Executive Vault Monitoring Console";
 
+activeSlotIndex = 0; // Reset index saat ganti menu
 renderCards();
 renderSidebar();
 }
 
+// ==========================================
+// SCRIPT NEW (HTML EDITOR) FUNCTIONS
+// ==========================================
+
+function getScriptsForCurrentMenu() {
+    return masterData.filter(d => d.category === activeMenu && !d.deleted);
+}
+
+function renderScriptEditor() {
+    const editorUI = document.getElementById('scriptNewEditor');
+    const controlBar = document.getElementById('normalControlBar');
+    const grid = document.getElementById('cardGrid');
+    const emptyState = document.getElementById('emptyState');
+    if(!editorUI) return;
+
+    editorUI.style.display = 'flex';
+    controlBar.style.display = 'none';
+    grid.style.display = 'none';
+    if(emptyState) emptyState.style.display = 'none';
+
+    const slots = getScriptsForCurrentMenu();
+    
+    // Pastikan minimal ada 1 slot agar editor tidak kosong
+    if(slots.length === 0) {
+        addNewScriptSlot(false);
+        return;
+    }
+
+    // Render Tab Slot (Barisan Atas)
+    const tabContainer = document.getElementById('slotTabs');
+    tabContainer.innerHTML = '';
+    slots.forEach((slot, i) => {
+        const btn = document.createElement('button');
+        btn.className = `promo-tab px-6 py-3 rounded-2xl font-master font-black text-[10px] uppercase tracking-wider shadow-md ${activeSlotIndex === i ? 'active' : ''}`;
+        btn.innerHTML = `<div>${slot.title}</div><div class="text-[8px] opacity-60">${slot.extraInfo || 'PROMO'}</div>`;
+        btn.onclick = () => { activeSlotIndex = i; loadScriptSlot(); };
+        tabContainer.appendChild(btn);
+    });
+
+    loadScriptSlot();
+}
+
+function loadScriptSlot() {
+    const slots = getScriptsForCurrentMenu();
+    const slot = slots[activeSlotIndex];
+    if(!slot) { activeSlotIndex = 0; return renderScriptEditor(); }
+
+    document.getElementById('editorPromoTitle').value = slot.title;
+    document.getElementById('editorPromoCategory').value = slot.extraInfo || "PROMO";
+    document.getElementById('editorPromoStatus').value = slot.status || "Aktif";
+    document.getElementById('promoCodeInput').value = slot.content || "";
+    
+    updateScriptPreview();
+    
+    // Highlight tab aktif
+    document.querySelectorAll('.promo-tab').forEach((t, i) => {
+        t.classList.toggle('active', i === activeSlotIndex);
+    });
+}
+
+function updateScriptPreview() {
+    const code = document.getElementById('promoCodeInput').value;
+    const iframe = document.getElementById('promoPreviewFrame');
+    const charLabel = document.getElementById('charCounter');
+    
+    if(iframe) {
+        const doc = iframe.contentDocument || iframe.contentWindow.document;
+        doc.open();
+        doc.write(code);
+        doc.close();
+    }
+    if(charLabel) charLabel.innerText = `${code.length} CHARS`;
+}
+
+function addNewScriptSlot(shouldRender = true) {
+    const newSlot = {
+        category: activeMenu,
+        title: "PROMO " + (getScriptsForCurrentMenu().length + 1),
+        content: "<!-- Tempel script Anda di sini -->",
+        extraInfo: "PROMO",
+        status: "Aktif",
+        favorite: false
+    };
+    masterData.push(newSlot);
+    saveData();
+    activeSlotIndex = getScriptsForCurrentMenu().length - 1;
+    if(shouldRender) renderScriptEditor();
+    showToast('Slot Script Baru Ditambahkan', 'success');
+}
+
+function autoSaveSlot() {
+    const slots = getScriptsForCurrentMenu();
+    const slot = slots[activeSlotIndex];
+    if(!slot) return;
+
+    const masterIdx = masterData.indexOf(slot);
+    masterData[masterIdx].title = document.getElementById('editorPromoTitle').value.toUpperCase();
+    masterData[masterIdx].extraInfo = document.getElementById('editorPromoCategory').value.toUpperCase();
+    masterData[masterIdx].status = document.getElementById('editorPromoStatus').value;
+    masterData[masterIdx].content = document.getElementById('promoCodeInput').value;
+
+    // Simpan ke storage (Local + Firebase)
+    localStorage.setItem('v19_data', JSON.stringify(masterData));
+}
+
+function saveCurrentSlot() {
+    autoSaveSlot();
+    saveData(); // Sync ke Firebase
+    renderScriptEditor();
+    showToast('Seluruh Slot Berhasil Disimpan!', 'success');
+}
+
+function deleteCurrentSlot() {
+    if(confirm('Hapus slot script ini secara permanen?')) {
+        const slots = getScriptsForCurrentMenu();
+        const slot = slots[activeSlotIndex];
+        const masterIdx = masterData.indexOf(slot);
+        masterData.splice(masterIdx, 1);
+        saveData();
+        activeSlotIndex = 0;
+        renderScriptEditor();
+        showToast('Slot Dihapus', 'info');
+    }
+}
+
+function formatCode() {
+    const area = document.getElementById('promoCodeInput');
+    let code = area.value;
+    // Simple Indent Logic
+    code = code.replace(/>\s+</g, '>\n<');
+    area.value = code;
+    updateScriptPreview();
+    showToast('Kode Dirapikan (Basic)', 'info');
+}
+
+function applyPromoTemplate() {
+    const template = `<div style="background:#220000; color:#ffd700; padding:20px; text-align:center; font-family:sans-serif; border:5px solid #ffd700; border-radius:20px;">
+    <h1>BONUS GATES OF OLYMPUS</h1>
+    <table border="1" style="width:100%; border-collapse:collapse; color:#fff;">
+        <tr style="background:#ffd700; color:#000;"><th>BET</th><th>SCATTER</th><th>HADIAH</th></tr>
+        <tr><td>800-1600</td><td>3 Scatter</td><td>50.000</td></tr>
+    </table>
+</div>`;
+    document.getElementById('promoCodeInput').value = template;
+    updateScriptPreview();
+    autoSaveSlot();
+}
+
+function resetEditorContent() {
+    if(confirm('Hapus isi editor?')) {
+        document.getElementById('promoCodeInput').value = "";
+        updateScriptPreview();
+        autoSaveSlot();
+    }
+}
+
+// ==========================================
+// END SCRIPT NEW FUNCTIONS
+// ==========================================
+
 function renderCards() {
 const grid = document.getElementById('cardGrid');
+const editorUI = document.getElementById('scriptNewEditor');
+const controlBar = document.getElementById('normalControlBar');
+
 if(!grid) return;
 const searchInput = document.getElementById('searchInput');
 const search = searchInput ? searchInput.value.toLowerCase() : '';
+
+const mInfo = menus.find(m => m.name === activeMenu) || { type: 'alarm' };
+
+// Cek Mode Menu
+if (mInfo.type === 'script_promo') {
+    renderScriptEditor();
+    return;
+} else {
+    if(editorUI) editorUI.style.display = 'none';
+    if(controlBar) controlBar.style.display = 'flex';
+    grid.style.display = 'grid';
+}
+
 grid.innerHTML = '';
 
 let filtered = masterData.filter(d => d.category === activeMenu && !d.deleted);
@@ -1410,8 +1688,6 @@ const doneBadge = document.getElementById('doneCounterBadge');
 const pasaranText = document.getElementById('pasaranProgressText');
 if(doneBadge) doneBadge.innerText = `${doneCount} / ${filtered.length} DONE`;
 if(pasaranText) pasaranText.innerText = `${doneCount} / ${filtered.length} PASARAN DONE RESULT`;
-
-const mInfo = menus.find(m => m.name === activeMenu) || { type: 'alarm' };
 
 if (mInfo.type === 'pasaran') {
 filtered.sort((a, b) => {
@@ -1975,6 +2251,7 @@ if(type === 'pasaran') icon = 'fa-dice';
 if(type === 'note') icon = 'fa-file-lines';
 if(type === 'account') icon = 'fa-shield-halved';
 if(type === 'image_note') icon = 'fa-images';
+if(type === 'script_promo') icon = 'fa-code';
 
 menus.push({ name, type, icon, subtitle: "Centralized Command & Executive Vault Monitoring Console" });
 saveData();
@@ -2238,7 +2515,7 @@ showToast('Data Berhasil Dipulihkan!', 'success');
 }
 } catch(err) { showToast('File JSON Tidak Valid!', 'error'); }
 };
-reader.readAsText(fileInput.files[0]);
+reader.readAsDataURL(fileInput.files[0]);
 }
 
 function toggleMobileSidebar(open) {
